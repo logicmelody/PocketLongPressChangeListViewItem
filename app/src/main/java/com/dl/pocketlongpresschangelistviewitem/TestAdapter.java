@@ -43,7 +43,7 @@ public class TestAdapter extends ArrayAdapter<String> {
         final ViewHolder viewHolder;
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
 
-        if(null != view && view.getTag() instanceof ViewHolder) {
+        if (null != view && view.getTag() instanceof ViewHolder) {
             viewHolder = (ViewHolder) view.getTag();
         } else {
             view = layoutInflater.inflate(R.layout.test_list_item, parent, false);
@@ -56,28 +56,30 @@ public class TestAdapter extends ArrayAdapter<String> {
         }
         viewHolder.position = position;
 
-        setView(view, viewHolder);
+        setView(view);
 
         return view;
     }
 
-    private void setView(final View view, final ViewHolder viewHolder) {
-        viewHolder.title.setText(mData[viewHolder.position]);
-        viewHolder.showTitleButton.setOnClickListener(new View.OnClickListener() {
+    private void setView(final View view) {
+        final ViewHolder currentViewHolder = (ViewHolder) view.getTag();
+        currentViewHolder.title.setText(mData[currentViewHolder.position]);
+        currentViewHolder.showTitleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, mData[viewHolder.position], Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, mData[currentViewHolder.position], Toast.LENGTH_SHORT).show();
             }
         });
 
         view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if(View.VISIBLE == viewHolder.contentContainer.getVisibility()) {
+                if(View.VISIBLE == currentViewHolder.contentContainer.getVisibility()) {
+                    currentViewHolder.actionContainer.setVisibility(View.VISIBLE);
                     Animation moveOutAnimation = AnimationUtils.loadAnimation(mContext, R.anim.move_out);
-                    viewHolder.contentContainer.startAnimation(moveOutAnimation);
+                    currentViewHolder.contentContainer.startAnimation(moveOutAnimation);
                     mPreviousLongClickItem = view;
-                    mPreviousLongClickItemPosition = viewHolder.position;
+                    mPreviousLongClickItemPosition = currentViewHolder.position;
                 }
                 return true;
             }
@@ -87,11 +89,26 @@ public class TestAdapter extends ArrayAdapter<String> {
             public boolean onTouch(View v, MotionEvent event) {
                 switch(event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        ViewHolder currentViewHolder = (ViewHolder) view.getTag();
                         if (mPreviousLongClickItemPosition != -1 &&
                             mPreviousLongClickItemPosition != currentViewHolder.position) {
+                            final ViewHolder previousViewHolder = (ViewHolder) mPreviousLongClickItem.getTag();
                             Animation moveInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.move_in);
-                            ViewHolder previousViewHolder = (ViewHolder) mPreviousLongClickItem.getTag();
+                            moveInAnimation.setAnimationListener(new Animation.AnimationListener() {
+                                @Override
+                                public void onAnimationStart(Animation animation) {
+
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animation animation) {
+                                    previousViewHolder.actionContainer.setVisibility(View.GONE);
+                                }
+
+                                @Override
+                                public void onAnimationRepeat(Animation animation) {
+
+                                }
+                            });
                             previousViewHolder.contentContainer.startAnimation(moveInAnimation);
                             mPreviousLongClickItemPosition = -1;
                         }
