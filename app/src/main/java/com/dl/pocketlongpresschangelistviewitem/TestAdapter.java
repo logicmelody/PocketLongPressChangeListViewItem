@@ -71,6 +71,13 @@ public class TestAdapter extends ArrayAdapter<String> {
             }
         });
 
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "Click", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
