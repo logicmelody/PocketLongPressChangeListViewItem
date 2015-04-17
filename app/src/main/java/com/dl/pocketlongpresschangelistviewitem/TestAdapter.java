@@ -77,6 +77,22 @@ public class TestAdapter extends ArrayAdapter<String> {
                 if(View.VISIBLE == currentViewHolder.contentContainer.getVisibility()) {
                     currentViewHolder.actionContainer.setVisibility(View.VISIBLE);
                     Animation moveOutAnimation = AnimationUtils.loadAnimation(mContext, R.anim.move_out);
+                    moveOutAnimation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            currentViewHolder.contentContainer.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
                     currentViewHolder.contentContainer.startAnimation(moveOutAnimation);
                     mPreviousLongClickItem = view;
                     mPreviousLongClickItemPosition = currentViewHolder.position;
@@ -102,6 +118,7 @@ public class TestAdapter extends ArrayAdapter<String> {
                                 @Override
                                 public void onAnimationEnd(Animation animation) {
                                     previousViewHolder.actionContainer.setVisibility(View.GONE);
+                                    previousViewHolder.contentContainer.setVisibility(View.VISIBLE);
                                 }
 
                                 @Override
